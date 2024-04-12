@@ -1,11 +1,12 @@
+"use client";
 import React, { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import Input from "@/app/components/input/Input";
-import Button from "@/app/components/Button";
-import AuthSocial from "@/app/(marketing)/(site)/component/AuthSocial";
-
+import AuthSocialButton from "@/app/(Connexion)/component/AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import {useRouter} from "next/navigation";
+import Input from "@/components/input/Input";
+import Button from "@/components/Button";
+
 
 type Variant = 'LOGIN ' | 'REGISTER';
 
@@ -152,14 +153,14 @@ const AuthFrom = () => {
                 </div>
 
                 <div className="mt-6 flex gap-2">
-                    {/* socialAction('github') code que je doit normalement utiliser */}
-                    <AuthSocial
+                    {/*route.push("/document")  code que je doit normalement utiliser */}
+                    <AuthSocialButton
                         icon={BsGithub}
-                        onClick={() => route.push("/document") }
+                        onClick={() => socialAction('github')}
 
 
                     />
-                    <AuthSocial
+                    <AuthSocialButton
                         icon={BsGoogle}
                         onClick={() => socialAction('google')}
                     />
@@ -176,7 +177,7 @@ const AuthFrom = () => {
                 text-gray-500
             ">
                 <div>
-                    {variant === 'LOGIN ' ? 'Nouveau sur WebPad?' : 'Vous avez déjà un compte?'}
+                    {variant === 'LOGIN ' ? 'Nouveau sur U-Chat?' : 'Vous avez déjà un compte?'}
                 </div>
                 <div
                     onClick={toggleVariant}

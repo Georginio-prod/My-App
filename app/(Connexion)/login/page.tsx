@@ -20,13 +20,14 @@ export default function Home() {
         "
         >
 
-            <div className= "sm:mx-auto sm:w-full sm:max-w-md">
+            <div className= "sm:mx-auto sm:w-full sm:max-w-md ">
                 <img
                     alt="logo"
-                    height="48"
-                    width="48"
-                    className="mx-auto w-auto"
+                    height="8"
+                    width="8"
+                    className="mx-auto w-auto  mr-4"
                     src="/logo.png"
+
                 />
 
                 <h2
@@ -37,13 +38,15 @@ export default function Home() {
                 font-bold
                 tracking-tight
                 text-gray-900
+
+
                 "
                 >
-                    Sigin in to your account
+                    Connectez-vous à votre compte
                 </h2>
 
             </div>
-            <AuthForm/>
+           <AuthFrom/>
         </div>
     )
 }
