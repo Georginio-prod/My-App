@@ -6,6 +6,7 @@ import { BsGithub, BsGoogle } from "react-icons/bs";
 import {useRouter} from "next/navigation";
 import Input from "@/components/input/Input";
 import Button from "@/components/Button";
+import axios from "axios";
 
 
 type Variant = 'LOGIN ' | 'REGISTER';
@@ -39,7 +40,8 @@ const AuthFrom = () => {
         setIsLoading(true);
 
         if (variant === 'REGISTER') {
-            //créer une première action
+            //créer une action pour la connexion avec api register
+            axios.post('/api/register', data)
         }
         if (variant === 'LOGIN ') {
             //connexion a la base de donné
