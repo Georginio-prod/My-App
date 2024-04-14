@@ -1,0 +1,155 @@
+CREATE TABLE User (
+  id Int AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
+  emailVerified DATETIME,
+  image VARCHAR(255),
+  hashedPassword VARCHAR(255),
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Conversation (
+  id Int AUTO_INCREMENT PRIMARY KEY,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  lastMessageAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  name VARCHAR(255),
+  isGroup BOOLEAN
+);
+
+CREATE TABLE Message (
+  id Int AUTO_INCREMENT PRIMARY KEY,
+  body TEXT,
+  image VARCHAR(255),
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  conversationId VARCHAR(255),
+  senderId VARCHAR(255),
+  FOREIGN KEY (conversationId) REFERENCES Conversation(id) ON DELETE CASCADE,
+  FOREIGN KEY (senderId) REFERENCES User(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Account (
+  id Int AUTO_INCREMENT PRIMARY KEYY,
+  userId VARCHAR(255),
+  type VARCHAR(255),
+  provider VARCHAR(255),
+  providerAccountId VARCHAR(255),
+  refresh_token VARCHAR(255),
+  access_token VARCHAR(255),
+  expires_at INT,
+  token_type VARCHAR(255),
+  scope VARCHAR(255),
+  id_token VARCHAR(255),
+  session_state VARCHAR(255),
+  FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+  UNIQUE(provider, providerAccountId)
+);
+
+CREATE TABLE User_Conversations (
+  userId VARCHAR(255),
+  conversationId VARCHAR(255),
+  FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+  FOREIGN KEY (conversationId) REFERENCES Conversation(id) ON DELETE CASCADE,
+  PRIMARY KEY (userId, conversationId)
+);
+
+CREATE TABLE User_Messages (
+  userId VARCHAR(255),
+  messageId VARCHAR(255),
+  FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+  FOREIGN KEY (messageId) REFERENCES Message(id) ON DELETE CASCADE,
+  PRIMARY KEY (userId, messageId)
+);
+
+CREATE TABLE Message_Seen (
+  messageId VARCHAR(255),
+  seenId VARCHAR(255),
+  FOREIGN KEY (messageId) REFERENCES Message(id) ON DELETE CASCADE,
+  FOREIGN KEY (seenId) REFERENCES User(id) ON DELETE CASCADE,
+  PRIMARY KEY (messageId, seenId)
+);
+//////////////////////////verion sql que moi mm j'ai crée direct
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  email           String?   @unique
+  emailVerified   DateTime?
+  image           String?
+  hashedPassword  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  conversationIds String[] @db.ObjectId
+  conversations Conversation[] @relation(fields: [conversationIds], references: [id])
+
+  seenMessageIds String[] @db.ObjectId
+  seenMessages Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
+
+  accounts Account[]
+  messages Message[]
+}
+
+model Account {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String  @db.ObjectId
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.String
+  access_token       String?  @db.String
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.String
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Conversation {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt       DateTime @default(now())
+  lastMessageAt DateTime @default(now())
+  name String?
+  isGroup Boolean?
+
+  messagesIds String[] @db.ObjectId
+  messages Message[]
+
+  userIds String[] @db.ObjectId
+  users User[] @relation(fields: [userIds], references: [id])
+}
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  body String?
+  image String?
+  createdAt DateTime @default(now())
+
+  seenIds String[] @db.ObjectId
+  seen User[] @relation("Seen", fields: [seenIds], references: [id])
+
+  conversationId String @db.ObjectId
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId String @db.ObjectId
+  sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+// la version de mongo donc si tu veux tu peux écrire une version sql a parti de ça ou utiliser l'autre.
